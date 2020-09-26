@@ -236,7 +236,7 @@ func (b *Work) runWorker(client *http.Client, n int) {
 				<-throttle
 				fmt.Println("throttle complete at", time.Now())
 			}
-			b.makeRequest(client)
+			go b.makeRequest(client)
 		}
 	}
 }
