@@ -234,6 +234,7 @@ func (b *Work) runWorker(client *http.Client, n int) {
 		default:
 			if b.QPS > 0 {
 				<-throttle
+				fmt.Println("throttle complete at", time.Now())
 			}
 			b.makeRequest(client)
 		}
