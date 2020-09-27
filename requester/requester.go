@@ -226,19 +226,26 @@ func (b *Work) runWorker(client *http.Client, n int) {
 			return http.ErrUseLastResponse
 		}
 	}
+	var wg sync.WaitGroup
+	wg.Add(n)
 	for i := 0; i < n; i++ {
 		// Check if application is stopped. Do not send into a closed channel.
 		select {
 		case <-b.stopCh:
+			fmt.Println("stop channel closed")
 			return
 		default:
 			if b.QPS > 0 {
 				<-throttle
 				fmt.Println("throttle complete at", time.Now())
 			}
-			go b.makeRequest(client)
+			go func() {
+				b.makeRequest(client)
+				wg.Done()
+			}()
 		}
 	}
+	wg.Wait()
 }
 
 func (b *Work) runWorkers() {
